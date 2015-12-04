@@ -26,6 +26,10 @@ function ApplicationModel(stompClient) {
         self.pushNotification("Position update " + message.body);
         self.portfolio().updatePosition(JSON.parse(message.body));
       });
+      stompClient.subscribe("/user/paulson/queue/position-updates", function(message) {
+          self.pushNotification("Position update " + message.body);
+          self.portfolio().updatePosition(JSON.parse(message.body));
+      });
     }, function(error) {
        self.pushNotification(error.headers.message)
       console.log("STOMP protocol error " + error);

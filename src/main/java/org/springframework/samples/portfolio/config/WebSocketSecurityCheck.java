@@ -17,24 +17,21 @@ package org.springframework.samples.portfolio.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessageType;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 /**
- * @author Rob Winch
+ * @author Ninad Divadkar
  */
-@Configuration
-public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+@Component
+public class WebSocketSecurityCheck {
 
-    @Override
-    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages
-            .antMatchers(SimpMessageType.MESSAGE, "/queue/**", "/topic/**").denyAll()
-            .antMatchers(SimpMessageType.SUBSCRIBE, "/queue/**/*-user*","/topic/**/*-user*").denyAll()
-            .antMatchers(SimpMessageType.SUBSCRIBE, "/paulson/queue/**").access("@webSocketSecurityCheck.check(authent‌​ication,message)")
-            .antMatchers("/user/queue/errors").permitAll()
-            .anyMessage().hasRole("USER");
-
+    public boolean check(Authentication authentication, String message){
+        if (authentication.isAuthenticated()){
+            return true;
+        }
+        return false;
     }
 }
